@@ -8,7 +8,7 @@
             "tags": "keycloak",
             "version": "4.0.0.Beta2",
             "openshift.io/display-name": "Keycloak",
-            "description": "An example Keycloak server with HTTPS"
+            "description": "An example Keycloak server with HTTPS. \n\nNOTE: If you are going to use an external database, you need to manualy inject the environment variables DB_USER and DB_PASSWORD from your database secret."
         }
     },
     "parameters": [
@@ -16,6 +16,7 @@
             "displayName": "Application Name",
             "description": "The name for the application.",
             "name": "APPLICATION_NAME",
+            "from": "maximum length of 253 lower case alphanumeric characters, -, and .",
             "value": "keycloak",
             "required": true
         },
@@ -40,6 +41,41 @@
             "description": "DB vendor (H2, POSTGRES, MYSQL or MARIADB)",
             "name": "DB_VENDOR",
             "value": "H2",
+            "required": true
+        },
+        {
+            "displayName": "DB ADDR",
+            "description": "Specify the name of the database pod if you are going to use an external DB. The name of the DB pod should not be 'mysql' due to an keycloak internal bug",
+            "name": "DB_ADDR",
+            "from": "maximum length of 253 lower case alphanumeric characters, -, and .",
+            "value": "",
+            "required": false
+        },
+        {
+            "displayName": "DB Port",
+            "description": "DB port (default ports for H2 = 9123, MYSQL and MARIADB = 3306, POSTGRES = 5432",
+            "name": "DB_PORT",
+            "value": "9123",
+            "required": true
+        },
+        {
+            "displayName": "DB Database",
+            "description": "Name of the DB scheme",
+            "name": "DB_DATABASE",
+            "value": "keycloak",
+            "required": true
+        },
+        {
+            "displayName": "JDBC Parameters",
+            "description": "additional database driver parameters, if you use 'useSSL=true', you manually need to add a certificate",
+            "name": "JDBC_PARAMS",
+            "value": "useSSL=false",
+            "required": true
+        },
+        {
+            "displayName": "Namespace used for DNS discovery",
+            "description": "This namespace is a part of DNS query sent to Kubernetes API. This query allows the DNS_PING protocol to extract cluster members. This parameter might be removed once https://issues.jboss.org/browse/JGRP-2292 is implemented. Should be project name without '.svc.cluster.local' ",
+            "name": "NAMESPACE",
             "required": true
         },
         {
@@ -232,6 +268,22 @@
                                     {
                                         "name": "DB_VENDOR",
                                         "value": "${DB_VENDOR}"
+                                    },
+                                    {
+                                        "name": "DB_ADDR",
+                                        "value": "${DB_ADDR}"
+                                    },
+                                    {
+                                        "name": "DB_PORT",
+                                        "value": "${DB_PORT}"
+                                    },
+                                    {
+                                        "name": "DB_DATABASE",
+                                        "value": "${DB_DATABASE}"
+                                    },
+                                    {
+                                        "name": "JDBC_PARAMS",
+                                        "value": "${JDBC_PARAMS}"
                                     },
                                     {
                                         "name": "JGROUPS_DISCOVERY_PROTOCOL",
